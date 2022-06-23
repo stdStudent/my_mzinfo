@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "disas.h"
 #include "mz.h"
@@ -141,6 +142,12 @@ static char* concatf(const char* fmt, ...) {
 }
 
 char* chooseSet(int MOD, int R_M, int W, BYTE num) {
+    bool flagM = false;
+    if (num > 0x7F) { // byte
+        flagM = true;
+        num = ~num + 1;
+    }
+
     char* dest;
     switch (MOD) {
         case 0b00:
@@ -170,6 +177,10 @@ char* chooseSet(int MOD, int R_M, int W, BYTE num) {
                     return dest;
 
                 case 0b110:
+                    if (flagM)
+                    {
+                        dest = concatf("-%dh", num);
+                    }
                     dest = concatf("%dh", num); // D16
                     return dest;
 
@@ -185,35 +196,59 @@ char* chooseSet(int MOD, int R_M, int W, BYTE num) {
         case 0b01:
             switch (R_M) {
                 case 0b000:
-                    W ? (dest = concatf("word ptr[BX + SI + %dh]", num)) : (dest = concatf("byte ptr[BX + SI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX + SI - %dh]", num)) : (dest = concatf("byte ptr[BX + SI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BX + SI + %dh]", num)) : (dest = concatf("byte ptr[BX + SI + %dh]", num)); // D8
                     return dest;
 
                 case 0b001:
-                    W ? (dest = concatf("word ptr[BX + DI + %dh]", num)) : (dest = concatf("byte ptr[BX + DI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX + DI - %dh]", num)) : (dest = concatf("byte ptr[BX + DI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BX + DI + %dh]", num)) : (dest = concatf("byte ptr[BX + DI + %dh]", num)); // D8
                     return dest;
 
                 case 0b010:
-                    W ? (dest = concatf("word ptr[BP + SI + %dh]", num)) : (dest = concatf("byte ptr[BP + SI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BP + SI - %dh]", num)) : (dest = concatf("byte ptr[BP + SI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BP + SI + %dh]", num)) : (dest = concatf("byte ptr[BP + SI + %dh]", num)); // D8
                     return dest;
 
                 case 0b011:
-                    W ? (dest = concatf("word ptr[BP + DI + %dh]", num)) : (dest = concatf("byte ptr[BP + DI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BP + DI - %dh]", num)) : (dest = concatf("byte ptr[BP + DI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BP + DI + %dh]", num)) : (dest = concatf("byte ptr[BP + DI + %dh]", num)); // D8
                     return dest;
 
                 case 0b100:
-                    W ? (dest = concatf("word ptr[SI + %dh]", num)) : (dest = concatf("byte ptr[SI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[SI - %dh]", num)) : (dest = concatf("byte ptr[SI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[SI + %dh]", num)) : (dest = concatf("byte ptr[SI + %dh]", num)); // D8
                     return dest;
 
                 case 0b101:
-                    W ? (dest = concatf("word ptr[DI + %dh]", num)) : (dest = concatf("byte ptr[DI + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[DI - %dh]", num)) : (dest = concatf("byte ptr[DI - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[DI + %dh]", num)) : (dest = concatf("byte ptr[DI + %dh]", num)); // D8
                     return dest;
 
                 case 0b110:
-                    W ? (dest = concatf("word ptr[BP + %dh]", num)) : (dest = concatf("byte ptr[BP + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BP - %dh]", num)) : (dest = concatf("byte ptr[BP - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BP + %dh]", num)) : (dest = concatf("byte ptr[BP + %dh]", num)); // D8
                     return dest;
 
                 case 0b111:
-                    W ? (dest = concatf("word ptr[BX + %dh]", num)) : (dest = concatf("byte ptr[BX + %dh]", num)); // D8
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX - %dh]", num)) : (dest = concatf("byte ptr[BX - %dh]", num)); // D8
+                    else
+                        W ? (dest = concatf("word ptr[BX + %dh]", num)) : (dest = concatf("byte ptr[BX + %dh]", num)); // D8
                     return dest;
 
                 default:
@@ -224,32 +259,53 @@ char* chooseSet(int MOD, int R_M, int W, BYTE num) {
         case 0b10:
             switch (R_M) {
                 case 0b000:
-                    W ? (dest = concatf("word ptr[BX + SI + %dh]", num)) : (dest = concatf("byte ptr[BX + SI + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX + SI - %dh]", num)) : (dest = concatf("byte ptr[BX + SI - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[BX + SI + %dh]", num)) : (dest = concatf("byte ptr[BX + SI + %dh]", num)); // D16
                     return dest;
 
                 case 0b001:
-                    W ? (dest = concatf("word ptr[BX + DI + %dh]", num)) : (dest = concatf("byte ptr[BX + DI + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX + SI - %dh]", num)) : (dest = concatf("byte ptr[BX + SI - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[BX + DI + %dh]", num)) : (dest = concatf("byte ptr[BX + DI + %dh]", num)); // D16
                     return dest;
 
                 case 0b010:
                 case 0b011:
-                    W ? (dest = concatf("word ptr[BP + SI + %dh]", num)) : (dest = concatf("byte ptr[BP + SI + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BP + SI - %dh]", num)) : (dest = concatf("byte ptr[BP + SI - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[BP + SI + %dh]", num)) : (dest = concatf("byte ptr[BP + SI + %dh]", num)); // D16
                     return dest;
 
                 case 0b100:
-                    W ? (dest = concatf("word ptr[SI + %dh]", num)) : (dest = concatf("byte ptr[SI + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[SI - %dh]", num)) : (dest = concatf("byte ptr[SI - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[SI + %dh]", num)) : (dest = concatf("byte ptr[SI + %dh]", num)); // D16
                     return dest;
 
                 case 0b101:
-                    W ? (dest = concatf("word ptr[DI + %dh]", num)) : (dest = concatf("byte ptr[DI + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[DI - %dh]", num)) : (dest = concatf("byte ptr[DI - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[DI + %dh]", num)) : (dest = concatf("byte ptr[DI + %dh]", num)); // D16
                     return dest;
 
                 case 0b110:
-                    W ? (dest = concatf("word ptr[BP + %dh]", num)) : (dest = concatf("byte ptr[BP + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BP - %dh]", num)) : (dest = concatf("byte ptr[BP - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[BP + %dh]", num)) : (dest = concatf("byte ptr[BP + %dh]", num)); // D16
                     return dest;
 
                 case 0b111:
-                    W ? (dest = concatf("word ptr[BX + %dh]", num)) : (dest = concatf("byte ptr[BX + %dh]", num)); // D16
+                    if (flagM)
+                        W ? (dest = concatf("word ptr[BX - %dh]", num)) : (dest = concatf("byte ptr[BX - %dh]", num)); // D16
+                    else
+                        W ? (dest = concatf("word ptr[BX + %dh]", num)) : (dest = concatf("byte ptr[BX + %dh]", num)); // D16
                     return dest;
 
                 default:
@@ -961,9 +1017,18 @@ DWORD d_inc(MZHeaders* mz, DWORD pos, char* inst) {
             return 1;
 
         case 0x47:
-        case 0xFE:
             strcpy(inst, "inc    di");
             return 1;
+
+        case 0xFE:
+            result = num1 * 0x100 + num2;
+            sprintf(inst, "inc    byte ptr [%04Xh]", result);
+            return 4;
+
+        case 0xFF:
+            result = num1 * 0x100 + num2;
+            sprintf(inst, "inc    word ptr [%04Xh]", result);
+            return 4;
 
         default:
             exit(-1700);
@@ -1604,7 +1669,7 @@ DWORD d_sahf(MZHeaders* mz, DWORD pos, char* inst) {
 }
 
 // ???
-DWORD d_sal(MZHeaders* mz, DWORD pos, char* inst) {
+__attribute__((unused)) DWORD d_sal(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
     sprintf(inst, "sal    %s", dest);
     if (MOD == 0b11) return 2; else return 3;
