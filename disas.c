@@ -141,9 +141,29 @@ static char* concatf(const char* fmt, ...) {
     return buf;
 }
 
-char* chooseSet(int MOD, int R_M, int W, BYTE num) {
+typedef struct {
+    bool isWord;
+    BYTE word;
+} WW;
+
+WW def = {.isWord = false, .word = 0};
+
+/*
+ * ifWord == 0 by default
+ */
+char* _chooseSet(int MOD, int R_M, int W, BYTE ifByte, WW ifWord) {
+    WORD num;
+    if (ifWord.isWord)
+        num = (ifWord.word * 0x100 + ifByte);
+    else num = ifByte;
+
     bool flagM = false;
-    if (num > 0x7F) { // byte
+    if (ifWord.isWord == false && num > 0x7F) {
+        flagM = true;
+        num = ~num;
+        num = num % 0x80;
+        num = num + 1;
+    } else if (ifWord.word == true && num > 0x7FFF) {
         flagM = true;
         num = ~num + 1;
     }
@@ -356,6 +376,8 @@ char* chooseSet(int MOD, int R_M, int W, BYTE num) {
             exit(-104);
     }
 }
+#define DEF_OR_ARG(value,...) value
+#define chooseSet(MOD,R_M,W,num,...) _chooseSet(MOD,R_M,W,num, DEF_OR_ARG(__VA_ARGS__ __VA_OPT__(,) def))
 
 char* chooseSegmentReg(int REG) {
     switch (REG) {
@@ -1532,6 +1554,12 @@ DWORD d_popf(MZHeaders* mz, DWORD pos, char* inst) {
 
 DWORD d_push(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
+    if (MOD == 0b10) {
+        num2 = *(mz->code + pos + 3);
+        WW word = {true, num2};
+        dest = chooseSet(MOD, R_M, W, num1, word);
+    }
+
     switch (opc) {
         case 0x06:
             strcpy(inst, "push   es");
@@ -1583,7 +1611,7 @@ DWORD d_push(MZHeaders* mz, DWORD pos, char* inst) {
 
         case 0xFF:
             sprintf(inst, "push   %s", dest);
-            return 3;
+            if (MOD == 0b10) return 4; else return 3;
 
         default:
             exit(-1100);
