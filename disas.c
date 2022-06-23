@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "disas.h"
 #include "mz.h"
@@ -571,19 +570,23 @@ DWORD d_add(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
     switch (opc) {
         case 0x00:
+            D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
+            sprintf(inst, "add    %s,%s", dest, reg);
+            if (D_S == 0) return 4; else return 2;
+
         case 0x01:
-            //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
+            D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             sprintf(inst, "add    %s,%s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x02:
-            //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
+            D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
             sprintf(inst, "add    %s,%s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x03:
-            //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
+            D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
             sprintf(inst, "add    %s,%s", reg, dest);
             if (MOD == 0) return 4; else return 2;
@@ -868,6 +871,7 @@ DWORD d_dec(MZHeaders* mz, DWORD pos, char* inst) {
             return 2;
 
         case 0x4F:
+        case 0xFE:
             strcpy(inst, "dec   di");
             return 2;
 
@@ -930,35 +934,36 @@ DWORD d_inc(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x40:
             strcpy(inst, "inc    ax");
-            return 2;
+            return 1;
 
         case 0x41:
             strcpy(inst, "inc    cx");
-            return 2;
+            return 1;
 
         case 0x42:
             strcpy(inst, "inc    dx");
-            return 2;
+            return 1;
 
         case 0x43:
             strcpy(inst, "inc    bx");
-            return 2;
+            return 1;
 
         case 0x44:
             strcpy(inst, "inc    sp");
-            return 2;
+            return 1;
 
         case 0x45:
             strcpy(inst, "inc    bp");
-            return 2;
+            return 1;
 
         case 0x46:
             strcpy(inst, "inc    si");
-            return 2;
+            return 1;
 
         case 0x47:
+        case 0xFE:
             strcpy(inst, "inc    di");
-            return 2;
+            return 1;
 
         default:
             exit(-1700);
@@ -1080,9 +1085,15 @@ DWORD d_lds(MZHeaders* mz, DWORD pos, char* inst) {
 
 DWORD d_lea(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
-    //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
     sprintf(inst, "lea    %s,%s", reg, dest); // swap required
-    if (MOD == 0b11) return 4; else return 2;
+    if (MOD == 0b00 && R_M != 0b110)
+        return 2;
+    if (MOD == 0b01)
+        return 4;
+    if (MOD == 0b10)
+        return 6;
+    if (MOD == 0b00 && R_M == 0b110)
+        return 4;
 }
 
 DWORD d_les(MZHeaders* mz, DWORD pos, char* inst) {
@@ -1459,51 +1470,55 @@ DWORD d_push(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x06:
             strcpy(inst, "push   es");
-            return 2;
+            return 1;
 
         case 0x16:
             strcpy(inst, "push   ss");
-            return 2;
+            return 1;
 
         case 0x50:
             strcpy(inst, "push   ax");
-            return 2;
+            return 1;
 
         case 0x51:
             strcpy(inst, "push   cx");
-            return 2;
+            return 1;
 
         case 0x52:
             strcpy(inst, "push   dx");
-            return 2;
+            return 1;
 
         case 0x53:
             strcpy(inst, "push   bx");
-            return 2;
+            return 1;
 
         case 0x54:
             strcpy(inst, "push   sp");
-            return 2;
+            return 1;
 
         case 0x55:
             strcpy(inst, "push   bp");
-            return 2;
+            return 1;
 
         case 0x56:
             strcpy(inst, "push   si");
-            return 2;
+            return 1;
 
         case 0x57:
             strcpy(inst, "push   di");
-            return 2;
+            return 1;
 
         case 0x0E:
             strcpy(inst, "push   cs");
-            return 2;
+            return 1;
 
         case 0x1E:
             strcpy(inst, "push   ds");
-            return 2;
+            return 1;
+
+        case 0xFF:
+            sprintf(inst, "push   %s", dest);
+            return 3;
 
         default:
             exit(-1100);
@@ -1830,43 +1845,52 @@ DWORD d_wait(MZHeaders* mz, DWORD pos, char* inst) {
 DWORD d_xchg(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
     switch (opc) {
-        case 0x86: // Gb Eb from mov 0x8A
-            D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "xchg   %s,%s", dest, reg);
-            return 3;
+        case 0x86: // 2 or 4
+            //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
+            if (MOD != 0b11)
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "xchg   %s,%s", reg, dest);
+            if (MOD == 0b11 && R_M != 0b000 && W!= 0b01)
+                return 2;
+            if (MOD != 0b11)
+                return 4;
 
         case 0x87: // Gb Ev from mov 0x8B
-            D_S ? dest : (dest = concatf("word ptr[%s]", dest));
+            if (MOD != 0b11)
+                dest = concatf("word ptr[%s]", dest);
             sprintf(inst, "xchg   %s,%s", reg, dest); // swap required
-            if (MOD == 0b11) return 2; else return 3;
+            if (MOD == 0b11 && R_M != 0b000 && W != 0b01)
+                return 2;
+            if (MOD != 0b11)
+                return 4;
 
         case 0x91:
             strcpy(inst, "xchg   cx,ax");
-            return 3;
+            return 1;
 
         case 0x92:
             strcpy(inst, "xchg   dx,ax");
-            return 3;
+            return 1;
 
         case 0x93:
             strcpy(inst, "xchg   bx,ax");
-            return 3;
+            return 1;
 
         case 0x94:
             strcpy(inst, "xchg   sp,ax");
-            return 3;
+            return 1;
 
         case 0x95:
             strcpy(inst, "xchg   bp,ax");
-            return 3;
+            return 1;
 
         case 0x96:
             strcpy(inst, "xchg   si,ax");
-            return 3;
+            return 1;
 
         case 0x97:
             strcpy(inst, "xchg   di,ax");
-            return 3;
+            return 1;
 
         default:
             exit(-900);
