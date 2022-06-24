@@ -569,24 +569,24 @@ DWORD d_adc(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x10:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "adc    %s,%s", dest, reg);
+            sprintf(inst, "adc    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x11:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "adc    %s,%s", dest, reg);
+            sprintf(inst, "adc    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x12:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "adc    %s,%s", reg, dest);
+            sprintf(inst, "adc    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x13:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "adc    %s,%s", reg, dest);
+            sprintf(inst, "adc    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x14:
@@ -645,24 +645,24 @@ DWORD d_add(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x00:
             //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "add    %s,%s", dest, reg);
+            sprintf(inst, "add    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x01:
             //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "add    %s,%s", dest, reg);
+            sprintf(inst, "add    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x02:
             //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "add    %s,%s", reg, dest);
+            sprintf(inst, "add    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x03:
             //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "add    %s,%s", reg, dest);
+            sprintf(inst, "add    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x04:
@@ -718,24 +718,24 @@ DWORD d_and(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x20:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "adc    %s,%s", dest, reg);
+            sprintf(inst, "adc    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x21:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "adc    %s,%s", dest, reg);
+            sprintf(inst, "adc    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x22:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "adc    %s,%s", reg, dest);
+            sprintf(inst, "adc    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x23:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "adc    %s,%s", reg, dest);
+            sprintf(inst, "adc    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x24:
@@ -799,12 +799,14 @@ DWORD d_call(MZHeaders* mz, DWORD pos, char* inst) {
             tmp = mz->doshead->e_cs + 0x1000;
             sprintf(inst, "call   %X:%04X", tmp, result);
             return 3;
+
         case 0xFF:
             offs1 = *(mz->code + pos + 3);
             offs2 = *(mz->code + pos + 2);
             tmp = offs1 * 0x100 + offs2;
-            sprintf(inst, "call   dword ptr [%X]", result, tmp);
+            sprintf(inst, "call   dword ptr[%X]", result, tmp);
             return 4;
+
         case 0x9A:
             offs1 = *(mz->code + pos + 4);
             offs2 = *(mz->code + pos + 3);
@@ -814,6 +816,7 @@ DWORD d_call(MZHeaders* mz, DWORD pos, char* inst) {
             tmp = offs1 * 0x100 + offs2;
             sprintf(inst, "call   far ptr    %X:%X", result, tmp);
             return 5;
+
         default:
             exit(-100000);
     }
@@ -849,24 +852,24 @@ DWORD d_cmp(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x38:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "cmp    %s,%s", dest, reg);
+            sprintf(inst, "cmp    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x39:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "cmp    %s,%s", dest, reg);
+            sprintf(inst, "cmp    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x3A:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "cmp    %s,%s", reg, dest);
+            sprintf(inst, "cmp    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x3B:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "cmp    %s,%s", reg, dest);
+            sprintf(inst, "cmp    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x3C:
@@ -979,12 +982,12 @@ DWORD d_dec(MZHeaders* mz, DWORD pos, char* inst) {
 
         case 0xFE:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "dec    byte ptr [%04Xh]", result);
+            sprintf(inst, "dec    byte ptr[%04Xh]", result);
             return 4;
 
         case 0xFF:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "dec    word ptr [%04Xh]", result);
+            sprintf(inst, "dec    word ptr[%04Xh]", result);
             return 4;
 
         default:
@@ -1077,6 +1080,7 @@ DWORD d_imul(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         case 0xF7:
             if (MOD == 0b00 && R_M == 0b110)
                 dest = concatf("word ptr[%s]", dest);
@@ -1087,6 +1091,7 @@ DWORD d_imul(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         default:
             exit(2001);
     }
@@ -1097,20 +1102,20 @@ DWORD d_in(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0xE4:
             result = num2;
-            sprintf(inst, "in     al,%04Xh", result);
+            sprintf(inst, "in     al, %04Xh", result);
             return 2;
 
         case 0xE5:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "in     ax,%04Xh", result);
+            sprintf(inst, "in     ax, %04Xh", result);
             return 2;
 
         case 0xEC:
-            strcpy(inst, "in     al,dx");
+            strcpy(inst, "in     al, dx");
             return 1;
 
         case 0xED:
-            strcpy(inst, "in     ax,dx");
+            strcpy(inst, "in     ax, dx");
             return 1;
 
         default:
@@ -1152,13 +1157,15 @@ DWORD d_inc(MZHeaders* mz, DWORD pos, char* inst) {
         case 0x47:
             strcpy(inst, "inc    di");
             return 1;
+
         case 0xFE:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "inc    byte ptr [%04Xh]", result);
+            sprintf(inst, "inc    byte ptr[%04Xh]", result);
             return 4;
+
         case 0xFF:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "inc    word ptr [%04Xh]", result);
+            sprintf(inst, "inc    word ptr[%04Xh]", result);
             return 4;
 
         default:
@@ -1385,18 +1392,21 @@ DWORD d_jmp(MZHeaders* mz, DWORD pos, char* inst) {
             tmp = mz->doshead->e_cs + 0x1000;
             sprintf(inst, "jmp    %X:00%2X", tmp, result);
             return 2;
+
         case 0xE9:
             offs1 = offs1 * 0x100 + offs2;
             result = (g_pos + 3) + offs1;
             tmp = mz->doshead->e_cs + 0x1000;
             sprintf(inst, "jmp %X:%4X", tmp, result);
             return 3;
+
         case 0xFF:
             offs1 = *(mz->code + pos + 3);
             offs2 = *(mz->code + pos + 2);
             tmp = offs1 * 0x100 + offs2;
-            sprintf(inst, "jmp    dword ptr [%X]", result, tmp);
+            sprintf(inst, "jmp    dword ptr[%X]", result, tmp);
             return 4;
+
         case 0xEA:
             offs1 = *(mz->code + pos + 4);
             offs2 = *(mz->code + pos + 3);
@@ -1406,6 +1416,7 @@ DWORD d_jmp(MZHeaders* mz, DWORD pos, char* inst) {
             tmp = offs1 * 0x100 + offs2;
             sprintf(inst, "jmp    far ptr    %X:%X", result, tmp);
             return 5;
+
         default:
             exit(-1290);
     }
@@ -1435,13 +1446,13 @@ DWORD d_lds(MZHeaders* mz, DWORD pos, char* inst) {
 
     char* dest = chooseSet(MOD, R_M, W, num1);
     char* reg = chooseBaseReg(REG);
-    sprintf(inst, "lds    %s,%s", reg, dest);
+    sprintf(inst, "lds    %s, %s", reg, dest);
     if (MOD == 0) return 2; else return 4;
 }
 
 DWORD d_lea(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
-    sprintf(inst, "lea    %s,%s", reg, dest); // swap required
+    sprintf(inst, "lea    %s, %s", reg, dest); // swap required
     if (MOD == 0b00 && R_M != 0b110)
         return 2;
     if (MOD == 0b01)
@@ -1471,7 +1482,7 @@ DWORD d_les(MZHeaders* mz, DWORD pos, char* inst) {
     W = 0b1;
     char* dest = chooseSet(MOD, R_M, W, num1);
     char* reg = chooseBaseReg(REG);
-    sprintf(inst, "les    %s,%s", reg, dest);
+    sprintf(inst, "les    %s, %s", reg, dest);
     if (MOD == 0) return 2; else return 4;
 
 }
@@ -1540,130 +1551,145 @@ DWORD d_mov(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
     switch (opc) {
         case 0x88:
-            D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "mov    %s,%s", dest, reg);
+            //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
+            sprintf(inst, "mov    %s, %s", dest, reg);
             return 3;
 
         case 0x89:
-            D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "mov    %s,%s", dest, reg);
+            //D_S ? dest : (dest = concatf("word ptr[%s]", dest));
+            sprintf(inst, "mov    %s, %s", dest, reg);
             return 3;
 
         case 0x8A:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "mov    %s,%s", reg, dest); // swap required
+            sprintf(inst, "mov    %s, %s", reg, dest); // swap required
             if (MOD == 0b11) return 2; else return 3;
 
         case 0x8B:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "mov    %s,%s", reg, dest); // swap required
+            sprintf(inst, "mov    %s, %s", reg, dest); // swap required
             if (MOD == 0b11) return 2; else return 3;
 
         case 0x8C:
             reg = chooseSegmentReg(REG);
             dest = chooseBaseReg(R_M);
-            sprintf(inst, "mov    %s,%s", dest, reg);
+            sprintf(inst, "mov    %s, %s", dest, reg);
             return 2;
 
         case 0x8E:
             dest = chooseSegmentReg(REG);
             reg = chooseBaseReg(R_M);
-            sprintf(inst, "mov    %s,%s", dest, reg);
+            sprintf(inst, "mov    %s, %s", dest, reg);
             return 2;
 
         case 0xA0:
             result = num2;
-            sprintf(inst, "mov    al, byte ptr [%02Xh]", result);
+            sprintf(inst, "mov    al, byte ptr[%02Xh]", result);
             return 2;
 
         case 0xA1:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    ax, word ptr [%04Xh]", result);
+            sprintf(inst, "mov    ax, word ptr[%04Xh]", result);
             return 3;
 
         case 0xA2:
             result = num2;
-            sprintf(inst, "mov    byte ptr [%04Xh], al", result);
+            sprintf(inst, "mov    byte ptr[%04Xh], al", result);
             return 2;
 
         case 0xA3:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    word ptr [%04Xh], ax", result);
+            sprintf(inst, "mov    word ptr[%04Xh], ax", result);
             return 3;
 
         case 0xB0:
             result = num2;
-            sprintf(inst, "mov    al,%04Xh", result);
+            sprintf(inst, "mov    al, %04Xh", result);
             return 2;
+
         case 0xB1:
             result = num2;
-            sprintf(inst, "mov    cl,%04Xh", result);
+            sprintf(inst, "mov    cl, %04Xh", result);
             return 2;
+
         case 0xB2:
             result = num2;
-            sprintf(inst, "mov    dl,%04Xh", result);
+            sprintf(inst, "mov    dl, %04Xh", result);
             return 2;
+
         case 0xB3:
             result = num2;
-            sprintf(inst, "mov    bl,%04Xh", result);
+            sprintf(inst, "mov    bl, %04Xh", result);
             return 2;
+
         case 0xB4:
             result = num2;
-            sprintf(inst, "mov    ah,%04Xh", result);
+            sprintf(inst, "mov    ah, %04Xh", result);
             return 2;
+
         case 0xB5:
             result = num2;
-            sprintf(inst, "mov    ch,%04Xh", result);
+            sprintf(inst, "mov    ch, %04Xh", result);
             return 2;
+
         case 0xB6:
             result = num2;
-            sprintf(inst, "mov    dh,%04Xh", result);
+            sprintf(inst, "mov    dh, %04Xh", result);
             return 2;
+
         case 0xB7:
             result = num2;
-            sprintf(inst, "mov    bh,%04Xh", result);
+            sprintf(inst, "mov    bh, %04Xh", result);
             return 2;
+
         case 0xB8:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    ax,%04Xh", result);
+            sprintf(inst, "mov    ax, %04Xh", result);
             return 3;
+
         case 0xB9:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    cx,%04Xh", result);
+            sprintf(inst, "mov    cx, %04Xh", result);
             return 3;
+
         case 0xBA:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    dx,%04Xh", result);
+            sprintf(inst, "mov    dx, %04Xh", result);
             return 3;
+
         case 0xBB:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    bx,%04Xh", result);
+            sprintf(inst, "mov    bx, %04Xh", result);
             return 3;
+
         case 0xBC:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    sp,%04Xh", result);
+            sprintf(inst, "mov    sp, %04Xh", result);
             return 3;
+
         case 0xBD:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    bp,%04Xh", result);
+            sprintf(inst, "mov    bp, %04Xh", result);
             return 3;
+
         case 0xBE:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    si,%04Xh", result);
+            sprintf(inst, "mov    si, %04Xh", result);
             return 3;
+
         case 0xBF:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    di,%04Xh", result);
+            sprintf(inst, "mov    di, %04Xh", result);
             return 3;
 
         case 0xC6:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    %s,%dh", dest, result);
+            sprintf(inst, "mov    %s, %dh", dest, result);
             return 4;
 
         case 0xC7:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "mov    %s,%dh", dest, result);
+            sprintf(inst, "mov    %s, %dh", dest, result);
             return 5;
 
         default:
@@ -1709,6 +1735,7 @@ DWORD d_mul(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         case 0xF7:
             if (MOD == 0b00 && R_M == 0b110)
                 dest = concatf("word ptr[%s]", dest);
@@ -1719,6 +1746,7 @@ DWORD d_mul(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         default:
             exit(2004);
     }
@@ -1752,6 +1780,7 @@ DWORD d_neg(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         case 0xF7:
             if (MOD == 0b00 && R_M == 0b110)
                 dest = concatf("word ptr[%s]", dest);
@@ -1762,6 +1791,7 @@ DWORD d_neg(MZHeaders* mz, DWORD pos, char* inst) {
                 return 4;
             else
                 return 3;
+
         default:
             exit(2007);
     }
@@ -1784,24 +1814,24 @@ DWORD d_or(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x08:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "or    %s,%s", dest, reg);
+            sprintf(inst, "or    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x09:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "or    %s,%s", dest, reg);
+            sprintf(inst, "or    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x0A:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "or    %s,%s", reg, dest);
+            sprintf(inst, "or    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x0B:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "or    %s,%s", reg, dest);
+            sprintf(inst, "or    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x0C:
@@ -1857,20 +1887,20 @@ DWORD d_out(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0xE6:
             result = num2;
-            sprintf(inst, "out    %04Xh,al", result);
+            sprintf(inst, "out    %04Xh, al", result);
             return 2;
 
         case 0xE7:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "out    %04Xh,ax", result);
+            sprintf(inst, "out    %04Xh, ax", result);
             return 2;
 
         case 0xEE:
-            strcpy(inst, "out    dx,al");
+            strcpy(inst, "out    dx, al");
             return 1;
 
         case 0xEF:
-            strcpy(inst, "out    dx,ax");
+            strcpy(inst, "out    dx, ax");
             return 1;
 
         default:
@@ -1937,6 +1967,13 @@ DWORD d_popf(MZHeaders* mz, DWORD pos, char* inst) {
 
 DWORD d_push(MZHeaders* mz, DWORD pos, char* inst) {
     GET_VARS
+    if (MOD == 0b10) {
+        num2 = *(mz->code + pos + 3);
+        WW word = {true, num2};
+
+        dest = chooseSet(MOD, R_M, W, num1, word);
+    }
+
     switch (opc) {
         case 0x06:
             strcpy(inst, "push   es");
@@ -1985,12 +2022,14 @@ DWORD d_push(MZHeaders* mz, DWORD pos, char* inst) {
         case 0x1E:
             strcpy(inst, "push   ds");
             return 1;
+
         case 0xFF:
             sprintf(inst, "push   %s", dest);
             if (MOD == 0b10)
                 return 4;
             else
                 return 3;
+
         default:
             exit(-1100);
     }
@@ -2007,36 +2046,40 @@ DWORD d_rcl(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rcl    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rcl    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rcl    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rcl    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rcl    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rcl    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rcl    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rcl    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         default:
             exit(141);
     }
@@ -2048,36 +2091,40 @@ DWORD d_rcr(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rcr    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rcr    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rcr    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rcr    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rcr    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rcr    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rcr    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rcr    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         default:
             exit(142);
     }
@@ -2185,36 +2232,40 @@ DWORD d_rol(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rol    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rol    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rol    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rol    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "rol    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "rol    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "rol    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "rol    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         default:
             exit(143);
     }
@@ -2226,36 +2277,40 @@ DWORD d_ror(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "ror    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "ror    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "ror    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "ror    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "ror    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "ror    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "ror    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "ror    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         default:
             exit(144);
     }
@@ -2272,52 +2327,58 @@ DWORD d_sal(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sal    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sal    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sal    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sal    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sal    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sal    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sal    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sal    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xC0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sal    %s,%2X", dest, num2);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sal    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         case 0xC1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sal    %s,%2X", dest, num2);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sal    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         default:
             exit(150);
     }
@@ -2330,52 +2391,58 @@ DWORD d_sar(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sar    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sar    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sar    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sar    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sar    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sar    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sar    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sar    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xC0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "sar    %s,%2X", dest, num2);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "sar    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         case 0xC1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "sar    %s,%2X", dest, num2);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "sar    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         default:
             exit(151);
     }
@@ -2386,24 +2453,24 @@ DWORD d_sbb(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x18:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "sbb    %s,%s", dest, reg);
+            sprintf(inst, "sbb    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x19:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "sbb    %s,%s", dest, reg);
+            sprintf(inst, "sbb    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x1A:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "sbb    %s,%s", reg, dest);
+            sprintf(inst, "sbb    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x1B:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "sbb    %s,%s", reg, dest);
+            sprintf(inst, "sbb    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x1C:
@@ -2468,52 +2535,58 @@ DWORD d_shl(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shl    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shl    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shl    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shl    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shl    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shl    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shl    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shl    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xC0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shl    %s,%2X", dest, num2);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shl    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         case 0xC1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shl    %s,%2X", dest, num2);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shl    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         default:
             exit(152);
     }
@@ -2525,52 +2598,58 @@ DWORD d_shr(MZHeaders* mz, DWORD pos, char* inst) {
     {
         case 0xD0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shr    %s,1", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shr    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shr    %s,1", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shr    %s, 1", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD2:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shr    %s,cl", dest);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shr    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xD3:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shr    %s,cl", dest);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shr    %s, cl", dest);
             if (MOD == 0b11)
                 return 2;
             else
                 return 4;
+
         case 0xC0:
             if (MOD != 0b11)
-                dest = concatf("byte ptr [%s]", dest);
-            sprintf(inst, "shr    %s,%2X", dest, num2);
+                dest = concatf("byte ptr[%s]", dest);
+            sprintf(inst, "shr    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         case 0xC1:
             if (MOD != 0b11)
-                dest = concatf("word ptr [%s]", dest);
-            sprintf(inst, "shr    %s,%2X", dest, num2);
+                dest = concatf("word ptr[%s]", dest);
+            sprintf(inst, "shr    %s, %2X", dest, num2);
             if (MOD == 0b11)
                 return 3;
             else
                 return 4;
+
         default:
             exit(153);
     }
@@ -2606,24 +2685,24 @@ DWORD d_sub(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x28:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "sub    %s,%s", dest, reg);
+            sprintf(inst, "sub    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x29:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "sub    %s,%s", dest, reg);
+            sprintf(inst, "sub    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x2A:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "sub    %s,%s", reg, dest);
+            sprintf(inst, "sub    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x2B:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "sub    %s,%s", reg, dest);
+            sprintf(inst, "sub    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x2C:
@@ -2680,24 +2759,25 @@ DWORD d_test(MZHeaders* mz, DWORD pos, char* inst) {
         case 0x84:
             if (MOD != 0b11)
                 dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "test   %s,%s", dest, reg);
+            sprintf(inst, "test   %s, %s", dest, reg);
             if (MOD == 0b11) return 2; else return 4;
 
         case 0x85:
             if (MOD != 0b11)
                 dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "test   %s,%s", dest, reg);
+            sprintf(inst, "test   %s, %s", dest, reg);
             if (MOD == 0b11) return 2; else return 4;
 
         case 0xA8:
             result = num2;
-            sprintf(inst, "test   al,%04X", result);
+            sprintf(inst, "test   al, %04X", result);
             return 2;
 
         case 0xA9:
             result = num1 * 0x100 + num2;
-            sprintf(inst, "test   ax,%04X", result);
+            sprintf(inst, "test   ax, %04X", result);
             return 3;
+
         case 0xF6:
             if (MOD == 0b11)
                 result = num1;
@@ -2705,11 +2785,12 @@ DWORD d_test(MZHeaders* mz, DWORD pos, char* inst) {
                 dest = concatf("byte ptr[%s]", dest);
                 result = *(mz->code + pos + 4);
             }
-            sprintf(inst, "test   %s,%04X", dest, result);
+            sprintf(inst, "test   %s, %04X", dest, result);
             if (MOD == 0b11)
                 return 3;
             else
                 return 5;
+
         case 0xF7:
             if (MOD == 0b11)
                 result = num1;
@@ -2717,11 +2798,12 @@ DWORD d_test(MZHeaders* mz, DWORD pos, char* inst) {
                 dest = concatf("word ptr[%s]", dest);
                 result = *(mz->code + pos + 4);
             }
-            sprintf(inst, "test   %s,%04X", dest, result);
+            sprintf(inst, "test   %s, %04X", dest, result);
             if (MOD == 0b11)
                 return 3;
             else
                 return 5;
+
         default:
             exit(-1000);
     }
@@ -2739,34 +2821,35 @@ DWORD d_xchg(MZHeaders* mz, DWORD pos, char* inst) {
             //D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11)
                 dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "xchg   %s,%s", reg, dest);
+            sprintf(inst, "xchg   %s, %s", reg, dest);
             if (MOD == 0b11 && R_M != 0b000 && W!= 0b01)
                 return 2;
             if (MOD != 0b11)
                 return 4;
+
         case 0x87: // Gb Ev from mov 0x8B
             if (MOD != 0b11)
                 dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "xchg   %s,%s", reg, dest); // swap required
+            sprintf(inst, "xchg   %s, %s", reg, dest); // swap required
             if (MOD == 0b11 && R_M != 0b000 && W != 0b01)
                 return 2;
             if (MOD != 0b11)
                 return 4;
 
         case 0x91:
-            strcpy(inst, "xchg   cx,ax");
+            strcpy(inst, "xchg   cx, ax");
             return 1;
 
         case 0x92:
-            strcpy(inst, "xchg   dx,ax");
+            strcpy(inst, "xchg   dx, ax");
             return 1;
 
         case 0x93:
-            strcpy(inst, "xchg   bx,ax");
+            strcpy(inst, "xchg   bx, ax");
             return 1;
 
         case 0x94:
-            strcpy(inst, "xchg   sp,ax");
+            strcpy(inst, "xchg   sp, ax");
             return 1;
 
         case 0x95:
@@ -2774,11 +2857,11 @@ DWORD d_xchg(MZHeaders* mz, DWORD pos, char* inst) {
             return 1;
 
         case 0x96:
-            strcpy(inst, "xchg   si,ax");
+            strcpy(inst, "xchg   si, ax");
             return 1;
 
         case 0x97:
-            strcpy(inst, "xchg   di,ax");
+            strcpy(inst, "xchg   di, ax");
             return 1;
 
         default:
@@ -2850,24 +2933,24 @@ DWORD d_xor(MZHeaders* mz, DWORD pos, char* inst) {
     switch (opc) {
         case 0x30:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
-            sprintf(inst, "xor    %s,%s", dest, reg);
+            sprintf(inst, "xor    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x31:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
-            sprintf(inst, "xor    %s,%s", dest, reg);
+            sprintf(inst, "xor    %s, %s", dest, reg);
             if (D_S == 0) return 4; else return 2;
 
         case 0x32:
             D_S ? dest : (dest = concatf("byte ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("byte ptr[%s]", dest);
-            sprintf(inst, "xor    %s,%s", reg, dest);
+            sprintf(inst, "xor    %s, %s", reg, dest);
             if (MOD != 0b11) return 4; else return 2;
 
         case 0x33:
             D_S ? dest : (dest = concatf("word ptr[%s]", dest));
             if (MOD != 0b11) dest = concatf("word ptr[%s]", dest);
-            sprintf(inst, "xor    %s,%s", reg, dest);
+            sprintf(inst, "xor    %s, %s", reg, dest);
             if (MOD == 0) return 4; else return 2;
 
         case 0x34:
@@ -2923,7 +3006,7 @@ DWORD d_cs(MZHeaders* mz, DWORD pos, char* inst) {
     g_inst_len = opcodes[*(mz->code + pos)](mz, pos, inst);
     g_pos += g_inst_len;
 
-    insert_substring(inst, "cs:", get_pos_to_insert(inst));
+    insert_substring(inst, " cs:", get_pos_to_insert(inst));
 
     return g_pos - pos + 2;
 }
@@ -2933,7 +3016,7 @@ DWORD d_ds(MZHeaders* mz, DWORD pos, char* inst) {
     g_inst_len = opcodes[*(mz->code + pos)](mz, pos, inst);
     g_pos += g_inst_len;
 
-    insert_substring(inst, "ds:", get_pos_to_insert(inst));
+    insert_substring(inst, " ds:", get_pos_to_insert(inst));
 
     return g_pos - pos + 2;
 }
@@ -2943,7 +3026,7 @@ DWORD d_es(MZHeaders* mz, DWORD pos, char* inst) {
     g_inst_len = opcodes[*(mz->code + pos)](mz, pos, inst);
     g_pos += g_inst_len;
 
-    insert_substring(inst, "es:", get_pos_to_insert(inst));
+    insert_substring(inst, " es:", get_pos_to_insert(inst));
 
     return g_pos - pos + 2;
 }
@@ -2953,7 +3036,7 @@ DWORD d_ss(MZHeaders* mz, DWORD pos, char* inst) {
     g_inst_len = opcodes[*(mz->code + pos)](mz, pos, inst);
     g_pos += g_inst_len;
 
-    insert_substring(inst, "ss:", get_pos_to_insert(inst));
+    insert_substring(inst, " ss:", get_pos_to_insert(inst));
 
     return g_pos - pos + 2;
 }
@@ -2963,20 +3046,28 @@ DWORD d_gr80(MZHeaders* mz, DWORD pos, char* inst) {
     switch (REG) {
         case 0b000:
             return d_add(mz, pos, inst);
+
         case 0b001:
             return d_or(mz, pos, inst);
+
         case 0b010:
             return d_adc(mz, pos, inst);
+
         case 0b011:
             return d_sbb(mz, pos, inst);
+
         case 0b100:
             return d_and(mz, pos, inst);
+
         case 0b101:
             return d_sub(mz, pos, inst);
+
         case 0b110:
             return d_xor(mz, pos, inst);
+
         case 0b111:
             return d_cmp(mz, pos, inst);
+
         default:
             return d_unk(mz, pos, inst);
     }
@@ -2987,18 +3078,25 @@ DWORD d_grd0(MZHeaders* mz, DWORD pos, char* inst) {
     switch (REG) {
         case 0b000:
             return d_rol(mz, pos, inst);
+
         case 0b001:
             return d_ror(mz, pos, inst);
+
         case 0b010:
             return d_rcl(mz, pos, inst);
+
         case 0b011:
             return d_rcr(mz, pos, inst);
+
         case 0b100:
             return d_shl(mz, pos, inst);
+
         case 0b101:
             return d_shr(mz, pos, inst);
+
         case 0b111:
             return d_sar(mz, pos, inst);
+
         default:
             return d_unk(mz, pos, inst);
     }
@@ -3009,18 +3107,25 @@ DWORD d_grf6(MZHeaders* mz, DWORD pos, char* inst) {
     switch (REG) {
         case 0b000:
             return d_test(mz, pos, inst);
+
         case 0b010:
             return d_not(mz, pos, inst);
+
         case 0b011:
             return d_neg(mz, pos, inst);
+
         case 0b100:
             return d_mul(mz, pos, inst);
+
         case 0b101:
             return d_imul(mz, pos, inst);
+
         case 0b110:
             return d_div(mz, pos, inst);
+
         case 0b111:
             return d_idiv(mz, pos, inst);
+
         default:
             return d_unk(mz, pos, inst);
     }
@@ -3031,8 +3136,10 @@ DWORD d_grfe(MZHeaders* mz, DWORD pos, char* inst) {
     switch (REG) {
         case 0b000:
             return d_inc(mz, pos, inst);
+
         case 0b001:
             return d_dec(mz, pos, inst);
+
         default:
             return d_unk(mz, pos, inst);
     }
