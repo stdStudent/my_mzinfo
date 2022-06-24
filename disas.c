@@ -141,15 +141,11 @@ static char* concatf(const char* fmt, ...) {
     return buf;
 }
 
-typedef struct {
-    bool isWord;
-    BYTE word;
-} WW;
-
+typedef struct { bool isWord; BYTE word; } WW;
 WW def = {.isWord = false, .word = 0};
 
 /*
- * ifWord == 0 by default
+ * ifWord == {false, 0} by default
  */
 char* _chooseSet(int MOD, int R_M, int W, BYTE ifByte, WW ifWord) {
     WORD num;
@@ -163,7 +159,7 @@ char* _chooseSet(int MOD, int R_M, int W, BYTE ifByte, WW ifWord) {
         num = ~num;
         num = num % 0x80;
         num = num + 1;
-    } else if (ifWord.word == true && num > 0x7FFF) {
+    } else if (ifWord.isWord == true && num >= 0x7FFF) {
         flagM = true;
         num = ~num + 1;
     }
